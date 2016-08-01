@@ -1,24 +1,19 @@
-/* Express 3 requires that you instantiate a `http.Server` to attach socket.io to first */
 var allowedOrigins = "http://localhost:* http://127.0.0.1:*",
     app = require('express')(),
     server = require('http').createServer(app),
     io = require('socket.io').listen(server, {
         origins: allowedOrigins
-    })
-port = 8080,
+    }),
+    port = 8080,
     url = 'http://localhost:' + port + '/';
 
 server.listen(port);
-console.log("Express server listening on port " + port);
+console.log('Express server listening on port ' + port);
 console.log(url);
-
-app.get('/', function (req, res) {
-    res.sendfile(__dirname + '/index.html');
-});
 
 io.sockets.on('connection', function (socket) {
 
-    console.log(socket.id);
+    console.log('New connection:' + socket.id);
 
     socket.emit('nationList', {
         nations: [
@@ -45,9 +40,8 @@ io.sockets.on('connection', function (socket) {
         });
     }, 4000);
 
-    socket.on('pongo', function (data) {
+    socket.on('ping', function (data) {
         console.log(data);
     });
 
-})
-;
+});
