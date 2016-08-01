@@ -1,0 +1,17 @@
+# dependencies
+/node_modules
+/bower_components
+
+# IDEs and editors
+/.idea
+.project
+.classpath
+*.launch
+.settings/
+
+# misc
+npm-debug.log
+
+#System Files
+.DS_Store
+Thumbs.db
