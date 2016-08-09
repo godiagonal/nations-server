@@ -38,7 +38,7 @@ module.exports.addNations = (req, res) => {
         nation.maxVisitors = nationObj.maxVisitors;
         nation.location = nationObj.location;
         nation.slug = nationObj.slug;
-        nation.image = nationObj.image;
+        nation.logo = nationObj.image;
         nation.googlePlaceId = nationObj.googlePlaceId;
         nation.facebookId = nationObj.facebookId;
         nation.nationsguidenKeyword = nationObj.nationsguidenKeyword;
