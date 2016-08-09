@@ -28,7 +28,7 @@ module.exports.getList = (req, res) => {
  */
 module.exports.getDetails = (req, res) => {
     Nation.findById(req.params.id, (findErr, nation) => {
-        if (findErr) {
+        if (findErr || !nation) {
             errorHandler.handle(findErr);
             res.json({ error: errorHandler.messages.nationNotFound });
         }
@@ -68,7 +68,7 @@ module.exports.refreshOpenHours = (req, res, next) => {
  */
 module.exports.refreshPlaceDetails = (req, res, next) => {
     Nation.findById(req.params.id, (findErr, nation) => {
-        if (findErr) {
+        if (findErr || !nation) {
             errorHandler.handle(findErr);
             res.json({ error: errorHandler.messages.nationNotFound });
         }
@@ -119,7 +119,7 @@ module.exports.refreshPlaceDetails = (req, res, next) => {
  */
 module.exports.refreshEvents = (req, res, next) => {
     Nation.findById(req.params.id, (findErr, nation) => {
-        if (findErr) {
+        if (findErr || !nation) {
             errorHandler.handle(findErr);
             res.json({ error: errorHandler.messages.nationNotFound });
         }
