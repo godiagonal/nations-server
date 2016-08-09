@@ -11,8 +11,10 @@ module.exports.handle = (err) => {
  * Error messages to be returned on failed requests.
  */
 module.exports.messages = {
-    nationNotFound: 'Nation not found.',
     nationsNotFound: 'No nations found.',
+    nationNotFound: 'Nation not found.',
+    invalidParams: 'The supplied parameters are invalid.',
+    authFailed: 'Authentication failed.',
     googleApiError: 'An error occurred when communicating with the Google API.',
     facebookApiError: 'An error occurred when communicating with the Facebook API.',
     unknownError: 'An unknown error occurred.'

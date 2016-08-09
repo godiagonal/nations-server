@@ -62,8 +62,11 @@ function refreshOpenHours(callback) {
  */
 function openHoursIsCached(callback) {
     Globals.findOne({ key: ngConfig.updatedKey }, (err, updated) => {
-        if (err || !updated) {
-            callback(err ? err : true);
+        if (err) {
+            callback(err);
+        }
+        else if (!updated) {
+            callback({ error: 'Globals key "' + ngConfig.updatedKey + '" not found.' });
         }
         else if (updated.value && tc.now().diff(new tc.DateTime(updated.value)).seconds() <= ngConfig.cacheExpires) {
             callback(null, true);
