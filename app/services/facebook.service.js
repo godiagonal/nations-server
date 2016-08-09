@@ -1,7 +1,8 @@
 var graph = require('fbgraph'),
     tc = require('timezonecomplete'),
     Event = require('../models/event.model').model,
-    fbConfig = require('../config/facebook.config');
+    fbConfig = require('../config/facebook.config'),
+    appConfig = require('../config/app.config');
 
 graph.setVersion(fbConfig.apiVersion);
 graph.setAccessToken(fbConfig.accessToken);
@@ -34,8 +35,9 @@ function parseEvents(eventObjs) {
     var events = [];
 
     eventObjs.forEach(eventObj => {
-        // Use same timezone as event
-        var now = tc.now(tc.zone(eventObj.timezone));
+        // Use same timezone as event (or fallback to app default)
+        var timezone = tc.zone(eventObj.timezone ? eventObj.timezone : appConfig.defaultTimezone);
+        var now = tc.now(timezone);
         var startTime = new tc.DateTime(eventObj.start_time);
         var endTime;
         if (eventObj.end_time)
