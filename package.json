@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "async": "^2.0.1",
-    "babel": "^6.5.2",
     "body-parser": "^1.15.2",
     "cheerio": "^0.20.0",
     "express": "^4.14.0",
