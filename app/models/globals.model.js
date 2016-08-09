@@ -15,5 +15,7 @@ var GlobalsSchema = new Schema({
     value: Schema.Types.Mixed
 });
 
+var GlobalsModel = mongoose.model('Globals', GlobalsSchema);
+
 module.exports.schema = GlobalsSchema;
-module.exports.model = mongoose.model('Globals', GlobalsSchema);
+module.exports.model = GlobalsModel;

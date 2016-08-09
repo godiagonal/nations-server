@@ -17,5 +17,7 @@ var PlaceSchema = new Schema({
     updated: Date
 });
 
+var PlaceModel = mongoose.model('Place', PlaceSchema);
+
 module.exports.schema = PlaceSchema;
-module.exports.model = mongoose.model('Place', PlaceSchema);
+module.exports.model = PlaceModel;
