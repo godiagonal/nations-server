@@ -2,6 +2,7 @@ var errorHandler = require('../services/error.service'),
     googleService = require('../services/google.service'),
     fbService = require('../services/facebook.service'),
     ngService = require('../services/nationsguiden.service'),
+    sockets = require('../sockets'),
     Nation = require('../models/nation.model').model;
 
 /**
@@ -15,8 +16,11 @@ module.exports.getList = (req, res) => {
             errorHandler.handle(err);
             res.json({ error: errorHandler.messages.nationsNotFound });
         }
+        else if (!nations) {
+            res.json({ error: errorHandler.messages.nationsNotFound });
+        }
         else {
-            res.json(nations);
+            res.json({ data: nations });
         }
     });
 }
@@ -27,13 +31,65 @@ module.exports.getList = (req, res) => {
  * @param res
  */
 module.exports.getDetails = (req, res) => {
-    Nation.findById(req.params.id, (findErr, nation) => {
-        if (findErr || !nation) {
-            errorHandler.handle(findErr);
+    Nation.findById(req.params.id, (err, nation) => {
+        if (err) {
+            errorHandler.handle(err);
+            res.json({ error: errorHandler.messages.nationNotFound });
+        }
+        else if (!nation) {
             res.json({ error: errorHandler.messages.nationNotFound });
         }
         else {
-            res.json(nation);
+            res.json({ data: nation });
+        }
+    });
+}
+
+/**
+ * Handle PUT request for updating details of a nation.
+ * Only certain properties can be updated, see below.
+ * @param req
+ * @param res
+ */
+module.exports.putDetails = (req, res) => {
+    Nation.findById(req.params.id, (err, nation) => {
+        if (err) {
+            errorHandler.handle(err);
+            res.json({ error: errorHandler.messages.nationNotFound });
+        }
+        else if (!nation) {
+            res.json({ error: errorHandler.messages.nationNotFound });
+        }
+        else {
+            var updated = false;
+
+            if (req.body.currentVisitors) {
+                nation.currentVisitors = req.body.currentVisitors;
+                updated = true;
+            }
+
+            if (req.body.maxVisitors) {
+                nation.maxVisitors = req.body.maxVisitors;
+                updated = true;
+            }
+
+            if (updated) {
+                nation.save(saveErr => {
+                    if (saveErr) {
+                        errorHandler.handle(saveErr);
+                        res.json({ error: errorHandler.messages.invalidParams });
+                    }
+                    else {
+                        // Broadcast updated fields to all clients
+                        sockets.emitVisitorStatus(nation);
+
+                        res.json({ status: 'OK' });
+                    }
+                });
+            }
+            else {
+                res.json({ error: errorHandler.messages.invalidParams });
+            }
         }
     });
 }
@@ -68,8 +124,11 @@ module.exports.refreshOpenHours = (req, res, next) => {
  */
 module.exports.refreshPlaceDetails = (req, res, next) => {
     Nation.findById(req.params.id, (findErr, nation) => {
-        if (findErr || !nation) {
+        if (findErr) {
             errorHandler.handle(findErr);
+            res.json({ error: errorHandler.messages.nationNotFound });
+        }
+        else if (!nation) {
             res.json({ error: errorHandler.messages.nationNotFound });
         }
         else {
@@ -119,8 +178,11 @@ module.exports.refreshPlaceDetails = (req, res, next) => {
  */
 module.exports.refreshEvents = (req, res, next) => {
     Nation.findById(req.params.id, (findErr, nation) => {
-        if (findErr || !nation) {
+        if (findErr) {
             errorHandler.handle(findErr);
+            res.json({ error: errorHandler.messages.nationNotFound });
+        }
+        else if (!nation) {
             res.json({ error: errorHandler.messages.nationNotFound });
         }
         else {
