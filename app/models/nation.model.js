@@ -37,8 +37,11 @@ var NationSchema = new Schema({
     events: [EventSchema], // Source: Facebook
     eventsUpdated: Date,
     nationsguidenKeyword: String,
-    todaysOpenHours: String, // Source: Nationsguiden
-    todaysEvent: String // Source: Nationsguiden
+    todaysEvent: String, // Source: Nationsguiden
+    todaysHours: {
+        open: Date,
+        close: Date
+    } // Source: Nationsguiden
 });
 
 var NationModel = mongoose.model('Nations', NationSchema);

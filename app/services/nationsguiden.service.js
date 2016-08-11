@@ -3,6 +3,7 @@ var request = require('request'),
     async = require('async'),
     tc = require('timezonecomplete'),
     ngConfig = require('../config/nationsguiden.config'),
+    appConfig = require('../config/app.config'),
     Nation = require('../models/nation.model').model,
     Globals = require('../models/globals.model').model;
 
@@ -137,14 +138,16 @@ function updateOpenHours(nationEvents, callback) {
             nations.forEach(nation => {
                 // Nations that aren't found in nationEvents will get a null
                 // value for openHours to indicate they're closed today
-                nation.todaysOpenHours = null;
+                nation.todaysHours = null;
                 nation.todaysEvent = null;
 
-                // Look for a nationEvent that matches the nations name
+                // Look for a nationEvent that matches the nations name.
+                // Sometimes there can be multiple events for each nation,
+                // in that case we just use the first one.
                 nationEvents.some(nationEvent => {
                     var match = nationEvent.nation.toLowerCase().indexOf(nation.nationsguidenKeyword);
                     if (match != -1) {
-                        nation.todaysOpenHours = nationEvent.openHours;
+                        nation.todaysHours = parseOpenHours(nationEvent.openHours);
                         nation.todaysEvent = nationEvent.eventTitle;
                         return true;
                     }
@@ -162,6 +165,35 @@ function updateOpenHours(nationEvents, callback) {
             });
         }
     });
+}
+
+/**
+ * Parses a string of format "hh:mm-hh:mm" to two Date objects
+ * using todays date.
+ * @param openHours
+ */
+function parseOpenHours(openHours) {
+    var now = tc.now(tc.zone(appConfig.defaultTimezone));
+    var openDateTimes = openHours.split('-').map(time =>
+        new tc.DateTime(now.format('yyyy-MM-dd zzzz') + ' ' + time, 'yyyy-MM-dd zzzz hh:mm'));
+
+    if (openDateTimes.length === 2) {
+        // If end time is after midnight we need to add one day
+        if (openDateTimes[1] <= openDateTimes[0]) {
+            openDateTimes[1] = openDateTimes[1].add(tc.days(1));
+        }
+
+        return {
+            open: openDateTimes[0],
+            close: openDateTimes[1]
+        };
+    }
+    else {
+        // Couldn't parse the open hours, fallback to null. This will
+        // indicate the nation is closed but there's nothing we can do
+        // about that.
+        return null;
+    }
 }
 
 module.exports.refreshOpenHours = refreshOpenHours;
