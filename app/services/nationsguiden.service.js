@@ -145,12 +145,14 @@ function updateOpenHours(nationEvents, callback) {
                 // Sometimes there can be multiple events for each nation,
                 // in that case we just use the first one.
                 nationEvents.some(nationEvent => {
-                    var match = nationEvent.nation.toLowerCase().indexOf(nation.nationsguidenKeyword);
-                    if (match != -1) {
-                        nation.todaysHours = parseOpenHours(nationEvent.openHours);
-                        nation.todaysEvent = nationEvent.eventTitle;
-                        return true;
-                    }
+                    return nation.nationsguidenKeywords.some(keyword => {
+                        var match = nationEvent.nation.toLowerCase().indexOf(keyword);
+                        if (match != -1) {
+                            nation.todaysHours = parseOpenHours(nationEvent.openHours);
+                            nation.todaysEvent = nationEvent.eventTitle;
+                            return true;
+                        }
+                    });
                 });
 
                 // Finally create a save function for the nation
@@ -174,25 +176,45 @@ function updateOpenHours(nationEvents, callback) {
  */
 function parseOpenHours(openHours) {
     var now = tc.now(tc.zone(appConfig.defaultTimezone));
+    var newDayThreshold = new tc.DateTime(now.format('yyyy-MM-dd zzzz') + ' ' + ngConfig.newDayThreshold, 'yyyy-MM-dd zzzz hh:mm');
+
+    // Nationsguiden keeps showing the open hours of a nation until the nation
+    // closes, even if that's on the next day. This means that the records on
+    // Nationsguiden that are fetched between 0am and closing time (usually 6am
+    // at the latest) will refer to the previous day. This is a bit tricky...
+    // In short: Is it before 6am? Then the openHours refers to the previous day.
+    // We compensate by subtracting one day.
+    // todo: verify that this works
+    if (now <= newDayThreshold) {
+        now = now.sub(tc.days(1));
+    }
+
     var openDateTimes = openHours.split('-').map(time =>
         new tc.DateTime(now.format('yyyy-MM-dd zzzz') + ' ' + time, 'yyyy-MM-dd zzzz hh:mm'));
 
     if (openDateTimes.length === 2) {
-        // If end time is after midnight we need to add one day
-        if (openDateTimes[1] <= openDateTimes[0]) {
-            openDateTimes[1] = openDateTimes[1].add(tc.days(1));
+        var open = openDateTimes[0];
+        var close = openDateTimes[1];
+
+        // If end time is after midnight (i.e. the next day) we need to add one day
+        if (close <= open) {
+            close = close.add(tc.days(1));
         }
 
         return {
-            open: openDateTimes[0],
-            close: openDateTimes[1]
+            open: open,
+            close: close
         };
     }
     else {
-        // Couldn't parse the open hours, fallback to null. This will
-        // indicate the nation is closed but there's nothing we can do
-        // about that.
-        return null;
+        // Couldn't parse the open hours, fallback to null values. Null dates indicate
+        // that we can't figure out the open hours of a nation (parse error). If we return
+        // just null (not an object) that will indicate the nation is closed (no record on
+        // Nationsguiden)
+        return {
+            open: null,
+            close: null
+        };
     }
 }
 
