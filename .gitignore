@@ -15,3 +15,8 @@ npm-debug.log
 #System Files
 .DS_Store
 Thumbs.db
+
+#Secrets
+/app/config/db.config.js
+/app/config/google.config.js
+/app/config/facebook.config.js
