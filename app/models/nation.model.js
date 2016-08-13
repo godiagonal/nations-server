@@ -32,11 +32,13 @@ var NationSchema = new Schema({
     },
     logo: String,
     googlePlaceId: String,
-    place: PlaceSchema, // Source: Google Places
     facebookId: String,
+    nationsguidenKeywords: [String],
+    place: PlaceSchema, // Source: Google Places
+    photos: [String], // Source: Google
+    photosUpdated: Date,
     events: [EventSchema], // Source: Facebook
     eventsUpdated: Date,
-    nationsguidenKeyword: String,
     todaysEvent: String, // Source: Nationsguiden
     todaysHours: {
         open: Date,

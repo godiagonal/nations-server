@@ -9,7 +9,6 @@ var PlaceSchema = new Schema({
     address: String,
     phone: String,
     website: String,
-    photos: [String],
     location: {
         latitude: Number,
         longitude: Number

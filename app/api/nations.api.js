@@ -116,8 +116,8 @@ module.exports.refreshOpenHours = (req, res, next) => {
 }
 
 /**
- * Middleware to update place details from Google Places API
- * before returning nation data.
+ * Middleware to update place details from Google API
+ * (or Facebook API) before returning nation data.
  * @param req
  * @param res
  * @param next
@@ -135,26 +135,78 @@ module.exports.refreshPlaceDetails = (req, res, next) => {
             // If the nation has a cached place object that isn't expired
             // we don't do anything
             if (googleService.placeIsCached(nation.place)) {
-                console.log('Used Google cache: true');
+                console.log('Used place cache: true');
 
                 next();
             }
             else {
-                console.log('Used Google cache: false');
+                console.log('Used place cache: false');
 
                 // Fetch place details and photos from the Google API
-                googleService.getPlace(nation.googlePlaceId, (gErr, place) => {
-                    if (gErr) {
+                googleService.getPlace(nation.googlePlaceId, (pErr, place) => {
+                    if (pErr) {
                         // Handle these silently to avoid breaking the app if the
-                        // Google API traffic qouta is exceeded or something. The
-                        // data from Google Places is kinda static anyway so it
-                        // might not matter much if it isn't updated everytime.
-                        errorHandler.handle(gErr);
+                        // API call fails or something. The page data from Google
+                        // is kinda static anyway so it might not matter much if it
+                        // isn't updated every time.
+                        errorHandler.handle(pErr);
                         next();
                     }
                     else {
                         // Cache the place in the db so that it can be used again
                         nation.place = place;
+                        nation.save(saveErr => {
+                            if (saveErr) { errorHandler.handle(saveErr); }
+
+                            // At this point we let the user proceed event if the
+                            // save failed
+                            next();
+                        });
+                    }
+                });
+            }
+        }
+    });
+}
+
+/**
+ * Middleware to update photos from Google API before
+ * returning nation data.
+ * @param req
+ * @param res
+ * @param next
+ */
+module.exports.refreshPhotos = (req, res, next) => {
+    Nation.findById(req.params.id, (findErr, nation) => {
+        if (findErr) {
+            errorHandler.handle(findErr);
+            res.json({ error: errorHandler.messages.nationNotFound });
+        }
+        else if (!nation) {
+            res.json({ error: errorHandler.messages.nationNotFound });
+        }
+        else {
+            // If the nation has cached photos that aren't expired
+            // we don't do anything
+            if (googleService.photosAreCached(nation)) {
+                console.log('Used photo cache: true');
+
+                next();
+            }
+            else {
+                console.log('Used photo cache: false');
+
+                googleService.getPhotos(nation.name, (pErr, photos) => {
+                    if (pErr) {
+                        // Handle these silently to avoid breaking the app if the
+                        // API call fails.
+                        errorHandler.handle(pErr);
+                        next();
+                    }
+                    else {
+                        // Cache the photos in the db so that it can be used again
+                        nation.photos = photos;
+                        nation.photosUpdated = Date.now();
                         nation.save(saveErr => {
                             if (saveErr) { errorHandler.handle(saveErr); }
 
@@ -189,20 +241,20 @@ module.exports.refreshEvents = (req, res, next) => {
             // If the nation has cached events that aren't expired
             // we don't do anything
             if (fbService.eventsAreCached(nation)) {
-                console.log('Used Facebook cache: true');
+                console.log('Used event cache: true');
 
                 next();
             }
             else {
-                console.log('Used Facebook cache: false');
+                console.log('Used event cache: false');
 
                 // Fetch events from the Facebook API
-                fbService.getEvents(nation.facebookId, (fbErr, events) => {
-                    if (fbErr) {
+                fbService.getEvents(nation.facebookId, (eErr, events) => {
+                    if (eErr) {
                         // Handle these silently to avoid breaking the app
                         // just because the Facebook API is acting up. Events
                         // arguably aren't that important to us anyway.
-                        errorHandler.handle(fbErr);
+                        errorHandler.handle(eErr);
                         next();
                     }
                     else {

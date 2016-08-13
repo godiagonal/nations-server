@@ -13,6 +13,7 @@ router.route('/nations/:id')
     .get(
         nations.refreshOpenHours,
         nations.refreshPlaceDetails,
+        nations.refreshPhotos,
         nations.refreshEvents,
         nations.getDetails)
     .put(
@@ -22,6 +23,7 @@ router.route('/nations/:id')
 router.route('/nations/:id')
 
 // todo: remove
+router.route('/test/updatekeywords').get(test.updateKeywords);
 router.route('/test/addglobals').get(test.addGlobals);
 router.route('/test/remove').get(test.removeNations);
 router.route('/test/add').get(test.addNations);
