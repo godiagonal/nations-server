@@ -1,3 +1,4 @@
+// Add apiKey and remove '.example' from the file name
 module.exports = {
     apiKey: 'apiKey',
     cx: '003761292377357490862:mprx7aqjrzi',

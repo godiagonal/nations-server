@@ -1,3 +1,4 @@
+// Add appId and appSecret and remove '.example' from the file name
 module.exports = {
     apiVersion: '2.7',
     accessToken: 'appId|appSecret',
