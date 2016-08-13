@@ -2,6 +2,81 @@
 
 module.exports.nations = [
     {
+        name: 'Gästrike-Hälsinge nation',
+        currentVisitors: 5,
+        maxVisitors: 10,
+        image: 'img/logo-gh.png',
+        googlePlaceId: 'ChIJoUum6_DLX0YRVCLwxQo2iP8',
+        facebookId: '182199291812160',
+        nationsguidenKeyword: 'gästrike'
+    },
+    {
+        name: 'Östgöta nation',
+        currentVisitors: 5,
+        maxVisitors: 10,
+        image: 'img/logo-og.png',
+        googlePlaceId: 'ChIJqczig_DLX0YR-hznLstGDCQ',
+        facebookId: '173921592633892',
+        nationsguidenKeyword: 'östgöta'
+    },
+    {
+        name: 'Västmanlands-Dala nation',
+        currentVisitors: 5,
+        maxVisitors: 10,
+        image: 'img/logo-vdala.png',
+        googlePlaceId: 'ChIJB3g6bPTLX0YRaqQs4mO3E3s',
+        facebookId: '196905371172',
+        nationsguidenKeyword: 'västmanland'
+    },
+    {
+        name: 'Smålands nation',
+        currentVisitors: 5,
+        maxVisitors: 10,
+        image: 'img/logo-smalands.png',
+        googlePlaceId: 'ChIJn-rTAfTLX0YR9EfhUqEewFQ',
+        facebookId: '118349611603428',
+        nationsguidenKeyword: 'småland'
+    },
+    {
+        name: 'Göteborgs nation',
+        currentVisitors: 5,
+        maxVisitors: 10,
+        image: 'img/logo-goteborgs.png',
+        googlePlaceId: 'ChIJVRedBfTLX0YRXGWHgTAm5sk',
+        facebookId: '223998040950913',
+        nationsguidenKeyword: 'göteborg'
+    },
+    {
+        name: 'Kalmar nation',
+        currentVisitors: 5,
+        maxVisitors: 10,
+        image: 'img/logo-kalmar.png',
+        googlePlaceId: 'ChIJz_l5hvPLX0YRP9yY89k0VFU',
+        facebookId: '362099939308',
+        nationsguidenKeyword: 'kalmar'
+    },
+    {
+        name: 'Värmlands nation',
+        currentVisitors: 5,
+        maxVisitors: 10,
+        image: 'img/logo-varmlands.png',
+        googlePlaceId: 'ChIJ_XnSHfHLX0YR2yfApik7jm4',
+        facebookId: '169775846382459',
+        nationsguidenKeyword: 'värmland'
+    },
+    {
+        name: 'Norrlands nation',
+        currentVisitors: 5,
+        maxVisitors: 10,
+        image: 'img/logo-norrlands.png',
+        googlePlaceId: 'ChIJg2EKtvDLX0YRwiA3EcYOBBo',
+        facebookId: '112634228776898',
+        nationsguidenKeyword: 'norrland'
+    }
+];
+
+/*module.exports.nations = [
+    {
         id: 1, name: 'Gotlands nation', currentVisitors: 9, maxVisitors: 10,
         location: { latitude: 59.8597109, longitude: 17.6335796 },
         slug: 'gotland', image: 'img/logo-gotlands.png',
@@ -41,4 +116,4 @@ module.exports.nations = [
         facebookId: '148807685139611',
         nationsguidenKeyword: 'södermanland'
     },
-];
+];*/

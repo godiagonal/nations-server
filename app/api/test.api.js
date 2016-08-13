@@ -8,6 +8,26 @@ var mongoose = require('mongoose'),
 var mockData = require('../mock-data').nations;
 var id = '57a7a9fea5e0e4e4cbaf0c73';
 
+module.exports.updateKeywords = (req, res) => {
+    Nation.find((err, nations) => {
+        if (err) {
+            res.json({ error: err });
+        }
+        else {
+            nations.forEach(nation => {
+                nation.nationsguidenKeywords = [nation.nationsguidenKeyword];
+                nation.save(function (err) {
+                    if (err) {
+                        console.log(err);
+                    }
+                });
+            });
+
+            res.json({ data: 'Updated keywords for all nations' });
+        }
+    });
+}
+
 module.exports.addGlobals = (req, res) => {
     var globals = new Globals();
     globals.key = 'nationsguidenUpdated';
@@ -36,8 +56,6 @@ module.exports.addNations = (req, res) => {
         nation.name = nationObj.name;
         nation.currentVisitors = nationObj.currentVisitors;
         nation.maxVisitors = nationObj.maxVisitors;
-        nation.location = nationObj.location;
-        nation.slug = nationObj.slug;
         nation.logo = nationObj.image;
         nation.googlePlaceId = nationObj.googlePlaceId;
         nation.facebookId = nationObj.facebookId;
